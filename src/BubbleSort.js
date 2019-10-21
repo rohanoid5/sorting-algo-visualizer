@@ -5,9 +5,10 @@ export const bubbleSort = (
   canvasContext,
   columnArray,
   delay = 0,
-  dimension
+  dimension,
+  callback
 ) => {
-  nestedLoop(data, canvasContext, columnArray, delay, dimension);
+  nestedLoop(data, canvasContext, columnArray, delay, dimension, callback);
 };
 
 const timer = ms => {
@@ -64,7 +65,8 @@ const nestedLoop = async (
   canvasContext,
   columnArray,
   delay,
-  dimension
+  dimension,
+  callback
 ) => {
   const length = data.length;
   for (let i = 0; i < length - 1; i++) {
@@ -72,4 +74,5 @@ const nestedLoop = async (
       await task(j, data, canvasContext, columnArray, delay, dimension);
     }
   }
+  callback();
 };

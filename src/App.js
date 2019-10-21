@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Column from './Column';
-import { bubbleSort } from './SortingAlgorithms';
+import { bubbleSort } from './BubbleSort';
+import './App.css';
 
 const RECT_WIDTH = 20;
 const GUTTER = 4;
 const CANVAS_PADDING = 4;
+const DELAY = 400;
 
 let bottomUpColumns;
 let topDownColumns;
@@ -78,6 +80,8 @@ const App = () => {
     canvasHeight: 0
   });
   const [numColumns, setNumColumns] = useState(20);
+  const [speed, setSpeed] = useState(4);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -106,43 +110,13 @@ const App = () => {
     setNumColumns(value);
   };
 
-  const onUpdate = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    (function myLoop(i) {
-      setTimeout(function() {
-        let firstColumn = bottomUpColumns[numColumns - i];
-        let secondColumn = bottomUpColumns[numColumns - i + 1];
-
-        ctx.clearRect(
-          firstColumn.x,
-          dimension.canvasHeight / 2,
-          Math.ceil(firstColumn.width + secondColumn.width) + 8,
-          dimension.canvasHeight / 2
-        );
-        ctx.fillRect(
-          firstColumn.x,
-          secondColumn.y,
-          firstColumn.width,
-          secondColumn.height
-        );
-        ctx.fillRect(
-          secondColumn.x,
-          firstColumn.y,
-          secondColumn.width,
-          firstColumn.height
-        );
-        if (i-- && numColumns - i + 1 < bottomUpColumns.length) {
-          myLoop(i);
-        }
-      }, 100);
-    })(numColumns);
-  };
-
   const onBubbleSort = () => {
+    setDisabled(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    bubbleSort(data, ctx, bottomUpColumns, 100, dimension);
+    bubbleSort(data, ctx, bottomUpColumns, DELAY / speed, dimension, () => {
+      setDisabled(false);
+    });
   };
 
   return (
@@ -152,18 +126,47 @@ const App = () => {
           display: 'flex',
           alignItems: 'center',
           maxWidth: 1000,
-          padding: '32px 0px',
+          padding: '16px 0px',
           margin: '0px auto'
         }}
       >
-        <input
-          type="range"
-          min="2"
-          max="199"
-          value={numColumns}
-          onChange={onNumColumnsChange}
-        />
-        <button onClick={onBubbleSort}>Update</button>
+        <div style={{ marginRight: 16 }}>
+          <p style={{ display: 'flex', justifyContent: 'space-between' }}>
+            Number of columns:{' '}
+            <span style={{ fontSize: 16, fontWeight: 'bold' }}>
+              {numColumns}
+            </span>
+          </p>
+          <input
+            disabled={disabled}
+            style={{ width: 200 }}
+            type="range"
+            min="2"
+            max="199"
+            value={numColumns}
+            onChange={onNumColumnsChange}
+          />
+        </div>
+        <div style={{ marginRight: 16 }}>
+          <p style={{ display: 'flex', justifyContent: 'space-between' }}>
+            Speed:{' '}
+            <span style={{ fontSize: 16, fontWeight: 'bold' }}>
+              x{speed / 4}
+            </span>
+          </p>
+          <input
+            disabled={disabled}
+            style={{ width: 200 }}
+            type="range"
+            min="1"
+            max="8"
+            value={speed}
+            onChange={e => setSpeed(e.target.value)}
+          />
+        </div>
+        <button disabled={disabled} onClick={onBubbleSort}>
+          SORT
+        </button>
       </div>
       <div
         style={{
