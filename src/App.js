@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Column from './Column';
 import { bubbleSort } from './BubbleSort';
+import { insertionSort } from './InsertionSort';
 import './App.css';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -18,7 +19,7 @@ import Switch from '@material-ui/core/Switch';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
-    margin: theme.spacing(2),
+    margin: theme.spacing(2, 0),
     minWidth: 200
   },
   button: {
@@ -57,7 +58,8 @@ const draw = (canvasRef, dimension, numOfRects) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     for (let i = 0; i < numOfRects; i++) {
       let value = Math.random();
-      let rectHeight = value * (canvasHeight / 2);
+      let rectHeight =
+        (value >= 0.9 ? value - 0.1 : value) * (canvasHeight / 2);
       drawColumn(
         ctx,
         Math.floor(xPos),
@@ -91,7 +93,6 @@ const draw = (canvasRef, dimension, numOfRects) => {
       xPos += rectWidth + GUTTER;
       data.push(value);
     }
-    console.log(data);
   }
 };
 
@@ -107,7 +108,8 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   const [numColumns, setNumColumns] = useState(20);
   const [speed, setSpeed] = useState(4);
   const [disabled, setDisabled] = useState(false);
-  const [sortingAlgo, setSortingAlgo] = useState('Bubble Sort');
+  const [sortingAlgoDown, setSortingAlgoDown] = useState('Bubble Sort');
+  const [sortingAlgoUp, setSortingAlgoUp] = useState('Insertion Sort');
   const [isCompareModeOn, setCompareMode] = useState(false);
 
   useEffect(() => {
@@ -128,17 +130,40 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
     if (dimension.canvasWidth) draw(canvasRef, dimension, numColumns);
   }, [dimension, numColumns]);
 
-  const onBubbleSort = () => {
+  const onSort = () => {
     setDisabled(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    bubbleSort(data, ctx, bottomUpColumns, DELAY / speed, dimension, () => {
-      setDisabled(false);
-    });
+    // bubbleSort(
+    //   data,
+    //   ctx,
+    //   bottomUpColumns,
+    //   DELAY / speed,
+    //   dimension,
+    //   false,
+    //   () => {
+    //     setDisabled(false);
+    //   }
+    // );
+    insertionSort(
+      data,
+      ctx,
+      topDownColumns,
+      DELAY / speed,
+      dimension,
+      true,
+      () => {
+        setDisabled(false);
+      }
+    );
   };
 
-  const handleChange = event => {
-    setSortingAlgo(event.target.value);
+  const handleChangeDown = event => {
+    setSortingAlgoDown(event.target.value);
+  };
+
+  const handleChangeUp = event => {
+    setSortingAlgoUp(event.target.value);
   };
 
   return (
@@ -149,7 +174,8 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
           alignItems: 'center',
           maxWidth: 1000,
           padding: '0px',
-          margin: '0px auto'
+          margin: '0px auto',
+          justifyContent: 'space-between'
         }}
       >
         <div>
@@ -200,7 +226,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
                 ? 'Select first Algorithm'
                 : 'Select an Algorithm'}
             </InputLabel>
-            <Select value={sortingAlgo} onChange={handleChange}>
+            <Select value={sortingAlgoDown} onChange={handleChangeDown}>
               <MenuItem value="Bubble Sort">Bubble Sort</MenuItem>
               <MenuItem value="Quick Sort">Quick Sort</MenuItem>
               <MenuItem value="Insertion Sort">Insertion Sort</MenuItem>
@@ -211,7 +237,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
               <InputLabel htmlFor="age-simple">
                 Select second Algorithm
               </InputLabel>
-              <Select value={sortingAlgo} onChange={handleChange}>
+              <Select value={sortingAlgoUp} onChange={handleChangeUp}>
                 <MenuItem value="Bubble Sort">Bubble Sort</MenuItem>
                 <MenuItem value="Quick Sort">Quick Sort</MenuItem>
                 <MenuItem value="Insertion Sort">Insertion Sort</MenuItem>
@@ -221,7 +247,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
         </form>
         <Button
           disabled={disabled}
-          onClick={onBubbleSort}
+          onClick={onSort}
           variant="contained"
           color="primary"
           className={classes.button}
