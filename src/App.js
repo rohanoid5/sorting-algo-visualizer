@@ -41,7 +41,7 @@ const drawColumn = (ctx, xpos, ypos, width = RECT_WIDTH, height) => {
   ctx.fillRect(xpos, ypos, width, height);
 };
 
-const draw = (canvasRef, dimension, numOfRects) => {
+const draw = (canvasRef, dimension, numOfRects, factor = 2) => {
   const canvas = canvasRef.current;
   const ctx = canvas.getContext('2d');
   const { canvasWidth, canvasHeight } = dimension;
@@ -59,35 +59,38 @@ const draw = (canvasRef, dimension, numOfRects) => {
     for (let i = 0; i < numOfRects; i++) {
       let value = Math.random();
       let rectHeight =
-        (value >= 0.9 ? value - 0.1 : value) * (canvasHeight / 2);
-      drawColumn(
-        ctx,
-        Math.floor(xPos),
-        0,
-        Math.floor(rectWidth),
-        Math.floor(canvasHeight / 2 - rectHeight)
-      );
+        (value >= 0.9 ? value - 0.1 : value) * (canvasHeight / factor);
+      if (factor === 2) {
+        drawColumn(
+          ctx,
+          Math.floor(xPos),
+          0,
+          Math.floor(rectWidth),
+          Math.floor(canvasHeight / 2 - rectHeight)
+        );
+        topDownColumns.push(
+          new Column(
+            Math.floor(xPos),
+            0,
+            Math.floor(rectWidth),
+            Math.floor(canvasHeight / 2 - rectHeight)
+          )
+        );
+      }
       drawColumn(
         ctx,
         Math.floor(xPos),
         Math.floor(canvasHeight),
         Math.floor(rectWidth),
-        Math.floor(-canvasHeight / 2 + rectHeight)
+        Math.floor(-canvasHeight / factor + rectHeight)
       );
-      topDownColumns.push(
-        new Column(
-          Math.floor(xPos),
-          0,
-          Math.floor(rectWidth),
-          Math.floor(canvasHeight / 2 - rectHeight)
-        )
-      );
+
       bottomUpColumns.push(
         new Column(
           Math.floor(xPos),
           Math.floor(canvasHeight),
           Math.floor(rectWidth),
-          Math.floor(-canvasHeight / 2 + rectHeight)
+          Math.floor(-canvasHeight / factor + rectHeight)
         )
       );
       xPos += rectWidth + GUTTER;
@@ -110,7 +113,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   const [disabled, setDisabled] = useState(false);
   const [sortingAlgoDown, setSortingAlgoDown] = useState('Bubble Sort');
   const [sortingAlgoUp, setSortingAlgoUp] = useState('Insertion Sort');
-  const [isCompareModeOn, setCompareMode] = useState(false);
+  const [isCompareModeOn, setCompareMode] = useState(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -127,34 +130,35 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   }, []);
 
   useEffect(() => {
-    if (dimension.canvasWidth) draw(canvasRef, dimension, numColumns);
-  }, [dimension, numColumns]);
+    if (dimension.canvasWidth) {
+      draw(canvasRef, dimension, numColumns, isCompareModeOn ? 2 : 1);
+    }
+  }, [dimension, numColumns, isCompareModeOn]);
 
   const onSort = () => {
     setDisabled(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    // bubbleSort(
-    //   data,
-    //   ctx,
-    //   bottomUpColumns,
-    //   DELAY / speed,
-    //   dimension,
-    //   false,
-    //   () => {
-    //     setDisabled(false);
-    //   }
-    // );
     insertionSort(
+      data,
+      ctx,
+      bottomUpColumns,
+      DELAY / speed,
+      dimension,
+      false,
+      isCompareModeOn,
+      () => {
+        setDisabled(false);
+      }
+    );
+    bubbleSort(
       data,
       ctx,
       topDownColumns,
       DELAY / speed,
       dimension,
       true,
-      () => {
-        setDisabled(false);
-      }
+      isCompareModeOn
     );
   };
 

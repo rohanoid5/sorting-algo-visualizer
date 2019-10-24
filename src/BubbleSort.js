@@ -7,7 +7,7 @@ export const bubbleSort = (
   delay = 0,
   dimension,
   isTopDown,
-  callback
+  isCompareModeOn
 ) => {
   nestedLoop(
     data,
@@ -15,8 +15,8 @@ export const bubbleSort = (
     columnArray,
     delay,
     dimension,
-    callback,
-    isTopDown
+    isTopDown,
+    isCompareModeOn ? 2 : 1
   );
 };
 
@@ -28,11 +28,11 @@ const task = async delay => {
   await timer(delay);
 };
 
-const getRectHeight = (value, canvasHeight, isTopDown) => {
+const getRectHeight = (value, canvasHeight, isTopDown, factor) => {
   if (isTopDown) {
-    return canvasHeight / 2 - value * (canvasHeight / 2);
+    return canvasHeight / factor - value * (canvasHeight / factor);
   } else {
-    return value * (canvasHeight / 2) - canvasHeight / 2;
+    return value * (canvasHeight / factor) - canvasHeight / factor;
   }
 };
 
@@ -54,13 +54,20 @@ const drawRect = (i, reactHeight, canvasContext, columnArray, isTopDown) => {
   }
 };
 
-const clearReact = (i, canvasHeight, canvasContext, columnArray, isTopDown) => {
+const clearReact = (
+  i,
+  canvasHeight,
+  canvasContext,
+  columnArray,
+  isTopDown,
+  factor
+) => {
   if (!isTopDown) {
     canvasContext.clearRect(
       columnArray[i].x,
-      canvasHeight / 2,
+      factor === 2 ? canvasHeight / 2 : 0,
       Math.ceil(columnArray[i].width + columnArray[i + 1].width) + 8,
-      canvasHeight / 2
+      canvasHeight / factor
     );
   } else {
     canvasContext.clearRect(
@@ -78,10 +85,10 @@ const nestedLoop = async (
   columnArray,
   delay,
   dimension,
-  callback,
-  isTopDown
+  isTopDown,
+  factor
 ) => {
-  const data = dataArg.splice(0);
+  const data = dataArg.slice(0);
   const length = data.length;
   for (let i = 0; i < length - 1; i++) {
     for (let j = 0; j < length - i - 1; j++) {
@@ -91,8 +98,18 @@ const nestedLoop = async (
         temp = data[j];
         data[j] = data[j + 1];
         data[j + 1] = temp;
-        let rectHeight1 = getRectHeight(data[j], canvasHeight, isTopDown);
-        let rectHeight2 = getRectHeight(data[j + 1], canvasHeight, isTopDown);
+        let rectHeight1 = getRectHeight(
+          data[j],
+          canvasHeight,
+          isTopDown,
+          factor
+        );
+        let rectHeight2 = getRectHeight(
+          data[j + 1],
+          canvasHeight,
+          isTopDown,
+          factor
+        );
         columnArray[j] = new Column(
           columnArray[j].x,
           columnArray[j].y,
@@ -105,14 +122,20 @@ const nestedLoop = async (
           columnArray[j + 1].width,
           Math.floor(rectHeight2)
         );
-        clearReact(j, canvasHeight, canvasContext, columnArray, isTopDown);
+        clearReact(
+          j,
+          canvasHeight,
+          canvasContext,
+          columnArray,
+          isTopDown,
+          factor
+        );
         drawRect(j, rectHeight1, canvasContext, columnArray, isTopDown);
         canvasContext.fillStyle = '#00FF91';
         drawRect(j + 1, rectHeight2, canvasContext, columnArray, isTopDown);
       }
-      canvasContext.fillStyle = '#6002EE';
+      // canvasContext.fillStyle = '#6002EE';
       await task(delay);
     }
   }
-  callback();
 };
