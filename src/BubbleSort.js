@@ -7,7 +7,8 @@ export const bubbleSort = (
   delay = 0,
   dimension,
   isTopDown,
-  isCompareModeOn
+  isCompareModeOn,
+  callback
 ) => {
   nestedLoop(
     data,
@@ -16,7 +17,8 @@ export const bubbleSort = (
     delay,
     dimension,
     isTopDown,
-    isCompareModeOn ? 2 : 1
+    isCompareModeOn ? 2 : 1,
+    callback
   );
 };
 
@@ -86,7 +88,8 @@ const nestedLoop = async (
   delay,
   dimension,
   isTopDown,
-  factor
+  factor,
+  callback
 ) => {
   const data = dataArg.slice(0);
   const length = data.length;
@@ -138,4 +141,5 @@ const nestedLoop = async (
       await task(delay);
     }
   }
+  callback();
 };

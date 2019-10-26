@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Column from './Column';
 import { bubbleSort } from './BubbleSort';
 import { insertionSort } from './InsertionSort';
+import { quickSort } from './QuickSort';
 import './App.css';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -139,7 +140,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
     setDisabled(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    insertionSort(
+    const argsBottom = [
       data,
       ctx,
       bottomUpColumns,
@@ -150,16 +151,37 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
       () => {
         setDisabled(false);
       }
-    );
-    bubbleSort(
+    ];
+    const argsTop = [
       data,
       ctx,
       topDownColumns,
       DELAY / speed,
       dimension,
       true,
-      isCompareModeOn
-    );
+      isCompareModeOn,
+      () => {
+        setDisabled(false);
+      }
+    ];
+
+    if (sortingAlgoDown === 'Bubble Sort') {
+      bubbleSort(...argsBottom);
+    } else if (sortingAlgoDown === 'Insertion Sort') {
+      insertionSort(...argsBottom);
+    } else if (sortingAlgoDown === 'Quick Sort') {
+      quickSort(...argsBottom);
+    }
+
+    if (isCompareModeOn) {
+      if (sortingAlgoUp === 'Bubble Sort') {
+        bubbleSort(...argsTop);
+      } else if (sortingAlgoUp === 'Insertion Sort') {
+        insertionSort(...argsTop);
+      } else if (sortingAlgoUp === 'Quick Sort') {
+        quickSort(...argsTop);
+      }
+    }
   };
 
   const handleChangeDown = event => {
@@ -198,7 +220,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
               valueLabelDisplay="auto"
               step={1}
               min={2}
-              max={180}
+              max={199}
               onChange={(e, v) => {
                 setNumColumns(v);
               }}

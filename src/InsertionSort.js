@@ -7,7 +7,8 @@ export const insertionSort = (
   delay = 0,
   dimension,
   isTopDown,
-  isCompareModeOn
+  isCompareModeOn,
+  callback
 ) => {
   nestedLoop(
     data,
@@ -16,7 +17,8 @@ export const insertionSort = (
     delay,
     dimension,
     isTopDown,
-    isCompareModeOn ? 2 : 1
+    isCompareModeOn ? 2 : 1,
+    callback
   );
 };
 
@@ -28,6 +30,39 @@ const task = async delay => {
   await timer(delay);
 };
 
+const clearReact = (
+  i,
+  canvasHeight,
+  canvasContext,
+  columnArray,
+  isTopDown,
+  factor
+) => {
+  if (isTopDown) {
+    canvasContext.clearRect(
+      columnArray[i].x,
+      0,
+      Math.ceil(columnArray[i].width),
+      canvasHeight / 2
+    );
+  } else {
+    canvasContext.clearRect(
+      columnArray[i].x,
+      factor === 2 ? canvasHeight / factor : 0,
+      Math.ceil(columnArray[i].width),
+      canvasHeight / factor
+    );
+  }
+};
+
+// const getRectHeight = (value, canvasHeight, isTopDown, factor) => {
+//   if (isTopDown) {
+//     return canvasHeight / factor - value * (canvasHeight / factor);
+//   } else {
+//     return value * (canvasHeight / factor) - canvasHeight / factor;
+//   }
+// };
+
 const nestedLoop = async (
   dataArg,
   canvasContext,
@@ -35,7 +70,8 @@ const nestedLoop = async (
   delay,
   dimension,
   isTopDown,
-  factor
+  factor,
+  callback
 ) => {
   const data = dataArg.slice(0);
   const length = data.length;
@@ -51,32 +87,25 @@ const nestedLoop = async (
         columnArray[j].y,
         columnArray[j].width,
         isTopDown
-          ? Math.floor(canvasHeight / factor - prevRectHeight)
-          : Math.floor(-canvasHeight / factor + prevRectHeight)
+          ? Math.ceil(canvasHeight / factor - prevRectHeight)
+          : Math.ceil(-canvasHeight / factor + prevRectHeight)
       );
-      if (isTopDown) {
-        canvasContext.clearRect(
-          columnArray[j].x,
-          0,
-          Math.ceil(columnArray[j].width),
-          canvasHeight / 2
-        );
-      } else {
-        canvasContext.clearRect(
-          columnArray[j].x,
-          factor === 2 ? canvasHeight / factor : 0,
-          Math.ceil(columnArray[j].width),
-          canvasHeight / factor
-        );
-      }
+      clearReact(
+        j,
+        canvasHeight,
+        canvasContext,
+        columnArray,
+        isTopDown,
+        factor
+      );
       canvasContext.fillStyle = '#00FF91';
       canvasContext.fillRect(
         columnArray[j].x,
         isTopDown ? 0 : canvasHeight,
         columnArray[j].width,
         isTopDown
-          ? Math.floor(canvasHeight / factor - prevRectHeight)
-          : Math.floor(-canvasHeight / factor + prevRectHeight)
+          ? Math.ceil(canvasHeight / factor - prevRectHeight)
+          : Math.ceil(-canvasHeight / factor + prevRectHeight)
       );
       data[j] = data[j - 1];
       j--;
@@ -87,34 +116,20 @@ const nestedLoop = async (
       columnArray[j].y,
       columnArray[j].width,
       isTopDown
-        ? Math.floor(canvasHeight / factor - currRectHeight)
-        : Math.floor(-canvasHeight / factor + currRectHeight)
+        ? Math.ceil(canvasHeight / factor - currRectHeight)
+        : Math.ceil(-canvasHeight / factor + currRectHeight)
     );
-    if (isTopDown) {
-      canvasContext.clearRect(
-        columnArray[j].x,
-        0,
-        Math.ceil(columnArray[j].width),
-        canvasHeight / 2
-      );
-    } else {
-      canvasContext.clearRect(
-        columnArray[j].x,
-        factor === 2 ? canvasHeight / factor : 0,
-        Math.ceil(columnArray[j].width),
-        canvasHeight / factor
-      );
-    }
+    clearReact(j, canvasHeight, canvasContext, columnArray, isTopDown, factor);
     canvasContext.fillStyle = '#00FF91';
     canvasContext.fillRect(
       columnArray[j].x,
       isTopDown ? 0 : canvasHeight,
       columnArray[j].width,
       isTopDown
-        ? Math.floor(canvasHeight / factor - currRectHeight)
-        : Math.floor(-canvasHeight / factor + currRectHeight)
+        ? Math.ceil(canvasHeight / factor - currRectHeight)
+        : Math.ceil(-canvasHeight / factor + currRectHeight)
     );
     data[j] = curr;
   }
-  console.log(data);
+  callback();
 };
