@@ -102,13 +102,14 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   const canvasRef = useRef(null);
   const [dimension, setDimension] = useState({
     xPos: 0,
-    yPox: 0,
+    yPos: 0,
     canvasWidth: 0,
     canvasHeight: 0
   });
   const [numColumns, setNumColumns] = useState(100);
   const [speed, setSpeed] = useState(4);
-  const [disabled, setDisabled] = useState(false);
+  const [bottomUpCompleted, setBottomUpCompleted] = useState(false);
+  const [topDownCompleted, setTopDownCompleted] = useState(false);
   const [sortingAlgoDown, setSortingAlgoDown] = useState('Quick Sort');
   const [sortingAlgoUp, setSortingAlgoUp] = useState('Insertion Sort');
   const [isCompareModeOn, setCompareMode] = useState(false);
@@ -116,12 +117,12 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const canvasX = canvas.getBoundingClientRect().x;
-    const canvasY = canvas.getBoundingClientRect().x;
+    const canvasY = canvas.getBoundingClientRect().y;
     const canvasWidth = 990;
     const canvasHeight = canvas.getBoundingClientRect().height;
     setDimension({
       xPos: canvasX,
-      yPox: canvasY,
+      yPos: canvasY,
       canvasHeight,
       canvasWidth
     });
@@ -139,7 +140,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   }, [dimension, numColumns, isCompareModeOn]);
 
   const onSort = () => {
-    setDisabled(true);
+    setBottomUpCompleted(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const argsBottom = [
@@ -151,7 +152,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
       false,
       isCompareModeOn,
       () => {
-        setDisabled(false);
+        setBottomUpCompleted(false);
       }
     ];
     const argsTop = [
@@ -163,7 +164,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
       true,
       isCompareModeOn,
       () => {
-        setDisabled(false);
+        setTopDownCompleted(false);
       }
     ];
 
@@ -176,6 +177,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
     }
 
     if (isCompareModeOn) {
+      setTopDownCompleted(true);
       if (sortingAlgoUp === 'Bubble Sort') {
         bubbleSort(...argsTop);
       } else if (sortingAlgoUp === 'Insertion Sort') {
@@ -215,7 +217,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
               </span>
             </p>
             <Slider
-              disabled={disabled}
+              disabled={bottomUpCompleted || topDownCompleted}
               style={{ width: 200 }}
               value={numColumns}
               aria-labelledby="discrete-slider-always"
@@ -236,7 +238,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
               </span>
             </p>
             <Slider
-              disabled={disabled}
+              disabled={bottomUpCompleted || topDownCompleted}
               style={{ width: 200 }}
               aria-labelledby="discrete-slider-always"
               valueLabelDisplay="auto"
@@ -274,7 +276,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
           ) : null}
         </form>
         <Button
-          disabled={disabled}
+          disabled={bottomUpCompleted || topDownCompleted}
           onClick={onSort}
           variant="contained"
           color="primary"
@@ -283,7 +285,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
           Sort
         </Button>
         <FormControlLabel
-          disabled={disabled}
+          disabled={bottomUpCompleted || topDownCompleted}
           control={
             <Switch
               checked={isCompareModeOn}
