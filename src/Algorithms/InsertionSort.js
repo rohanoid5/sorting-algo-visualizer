@@ -1,4 +1,4 @@
-import Column from './Column';
+import Column from '../Column';
 
 export const insertionSort = (
   data,
@@ -54,14 +54,6 @@ const clearReact = (
     );
   }
 };
-
-// const getRectHeight = (value, canvasHeight, isTopDown, factor) => {
-//   if (isTopDown) {
-//     return canvasHeight / factor - value * (canvasHeight / factor);
-//   } else {
-//     return value * (canvasHeight / factor) - canvasHeight / factor;
-//   }
-// };
 
 const nestedLoop = async (
   dataArg,

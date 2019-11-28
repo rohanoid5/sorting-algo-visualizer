@@ -1,9 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Column from './Column';
-import { bubbleSort } from './BubbleSort';
-import { insertionSort } from './InsertionSort';
-import { quickSort } from './QuickSort';
-import './App.css';
+import { quickSort, bubbleSort, insertionSort } from './Algorithms';
 
 import IconButton from '@material-ui/core/IconButton';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
@@ -249,7 +246,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
           <FormControl className={classes.formControl}>
             <InputLabel htmlFor="age-simple">
               {isCompareModeOn
-                ? 'Select first Algorithm'
+                ? 'Select second Algorithm'
                 : 'Select an Algorithm'}
             </InputLabel>
             <Select value={sortingAlgoDown} onChange={handleChangeDown}>
@@ -261,7 +258,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
           {isCompareModeOn ? (
             <FormControl className={classes.formControl}>
               <InputLabel htmlFor="age-simple">
-                Select second Algorithm
+                Select first Algorithm
               </InputLabel>
               <Select value={sortingAlgoUp} onChange={handleChangeUp}>
                 <MenuItem value="Bubble Sort">Bubble Sort</MenuItem>
