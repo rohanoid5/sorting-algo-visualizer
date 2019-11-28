@@ -57,7 +57,7 @@ const draw = (canvasRef, dimension, numOfRects, factor = 2) => {
     for (let i = 0; i < numOfRects; i++) {
       let value = Math.random();
       let rectHeight =
-        (value >= 0.9 ? value - 0.1 : value) * (canvasHeight / factor);
+        (value >= 0.8 ? value - 0.1 : value) * (canvasHeight / factor);
       if (factor === 2) {
         drawColumn(
           ctx,
@@ -106,18 +106,18 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
     canvasWidth: 0,
     canvasHeight: 0
   });
-  const [numColumns, setNumColumns] = useState(20);
+  const [numColumns, setNumColumns] = useState(100);
   const [speed, setSpeed] = useState(4);
   const [disabled, setDisabled] = useState(false);
-  const [sortingAlgoDown, setSortingAlgoDown] = useState('Bubble Sort');
+  const [sortingAlgoDown, setSortingAlgoDown] = useState('Quick Sort');
   const [sortingAlgoUp, setSortingAlgoUp] = useState('Insertion Sort');
-  const [isCompareModeOn, setCompareMode] = useState(true);
+  const [isCompareModeOn, setCompareMode] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const canvasX = canvas.getBoundingClientRect().x;
     const canvasY = canvas.getBoundingClientRect().x;
-    const canvasWidth = canvas.getBoundingClientRect().width;
+    const canvasWidth = 990;
     const canvasHeight = canvas.getBoundingClientRect().height;
     setDimension({
       xPos: canvasX,
@@ -129,7 +129,12 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
 
   useEffect(() => {
     if (dimension.canvasWidth) {
-      draw(canvasRef, dimension, numColumns, isCompareModeOn ? 2 : 1);
+      draw(
+        canvasRef,
+        dimension,
+        numColumns < 195 ? numColumns : 195,
+        isCompareModeOn ? 2 : 1
+      );
     }
   }, [dimension, numColumns, isCompareModeOn]);
 
@@ -217,7 +222,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
               valueLabelDisplay="auto"
               step={1}
               min={2}
-              max={199}
+              max={200}
               onChange={(e, v) => {
                 setNumColumns(v);
               }}
@@ -278,6 +283,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
           Sort
         </Button>
         <FormControlLabel
+          disabled={disabled}
           control={
             <Switch
               checked={isCompareModeOn}
@@ -310,7 +316,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
             border: !isDarkMode ? '2px solid #6002EE' : '2px solid #6002EE'
           }}
           ref={canvasRef}
-          width={990}
+          width={982}
           height={window.innerHeight - 180}
         />
       </div>

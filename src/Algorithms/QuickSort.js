@@ -68,10 +68,11 @@ const clearReact = (
   }
 };
 
-const swap = (items, leftIndex, rightIndex) => {
+const swap = async (items, leftIndex, rightIndex, delay) => {
   let temp = items[leftIndex];
   items[leftIndex] = items[rightIndex];
   items[rightIndex] = temp;
+  await task(delay);
 };
 
 const drawRect = (i, reactHeight, canvasContext, columnArray, isTopDown) => {
@@ -92,7 +93,7 @@ const drawRect = (i, reactHeight, canvasContext, columnArray, isTopDown) => {
   }
 };
 
-const partition = (
+const partition = async (
   items,
   left,
   right,
@@ -104,18 +105,41 @@ const partition = (
   factor
 ) => {
   let { canvasHeight } = dimension;
-  let pivot = items[Math.floor((right + left) / 2)], //middle element
+  let pivotIndex = Math.floor((right + left) / 2),
+    pivot = items[pivotIndex], //middle element
     i = left, //left pointer
     j = right; //right pointer
+  let pivotRectHeight = getRectHeight(
+    items[pivotIndex],
+    canvasHeight,
+    isTopDown,
+    factor
+  );
+  columnArray[pivotIndex] = new Column(
+    columnArray[pivotIndex].x,
+    columnArray[pivotIndex].y,
+    columnArray[pivotIndex].width,
+    Math.floor(pivotRectHeight)
+  );
+  clearReact(
+    pivotIndex,
+    canvasHeight,
+    canvasContext,
+    columnArray,
+    isTopDown,
+    factor
+  );
+  canvasContext.fillStyle = '#FF0040';
+  drawRect(pivotIndex, pivotRectHeight, canvasContext, columnArray, isTopDown);
   while (i <= j) {
-    while (items[i] < pivot) {
+    while (items[i] > pivot) {
       i++;
     }
-    while (items[j] > pivot) {
+    while (items[j] < pivot) {
       j--;
     }
     if (i <= j) {
-      swap(items, i, j); //sawpping two elements
+      await swap(items, i, j, delay); //sawpping two elements
       let rectHeight1 = getRectHeight(
         items[i],
         canvasHeight,
@@ -166,7 +190,7 @@ const partition = (
   return i;
 };
 
-const quickSortAlgo = (
+const quickSortAlgo = async (
   items,
   left,
   right,
@@ -179,50 +203,50 @@ const quickSortAlgo = (
   callback
 ) => {
   let index;
-  setTimeout(() => {
-    if (items.length > 1) {
-      index = partition(
+  if (items.length > 1) {
+    index = await partition(
+      items,
+      left,
+      right,
+      canvasContext,
+      columnArray,
+      delay,
+      dimension,
+      isTopDown,
+      factor
+    ); //index returned from partition
+    if (left < index - 1) {
+      //more elements on the left side of the pivot
+      await quickSortAlgo(
         items,
         left,
+        index - 1,
+        canvasContext,
+        columnArray,
+        delay,
+        dimension,
+        isTopDown,
+        factor,
+        callback
+      );
+    }
+    if (index < right) {
+      //more elements on the right side of the pivot
+      await quickSortAlgo(
+        items,
+        index,
         right,
         canvasContext,
         columnArray,
         delay,
         dimension,
         isTopDown,
-        factor
-      ); //index returned from partition
-      if (left < index - 1) {
-        //more elements on the left side of the pivot
-        quickSortAlgo(
-          items,
-          left,
-          index - 1,
-          canvasContext,
-          columnArray,
-          delay,
-          dimension,
-          isTopDown,
-          factor,
-          callback
-        );
-      }
-      if (index < right) {
-        //more elements on the right side of the pivot
-        quickSortAlgo(
-          items,
-          index,
-          right,
-          canvasContext,
-          columnArray,
-          delay,
-          dimension,
-          isTopDown,
-          factor,
-          callback
-        );
-      }
+        factor,
+        callback
+      );
     }
-  }, delay);
-  callback();
+  }
+  if (left === 0 && right === columnArray.length - 1) {
+    callback();
+  }
 };
