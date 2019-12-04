@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Column from './Column';
-import { quickSort, insertionSort } from './Algorithms';
+import { insertionSort } from './Algorithms';
 import BubbleSort from './Algorithms/BubbleSort';
+import QuickSort from './Algorithms/QuickSort';
 
 import IconButton from '@material-ui/core/IconButton';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
@@ -111,7 +112,7 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
   const [speed, setSpeed] = useState(4);
   const [bottomUpCompleted, setBottomUpCompleted] = useState(false);
   const [topDownCompleted, setTopDownCompleted] = useState(false);
-  const [sortingAlgoDown, setSortingAlgoDown] = useState('Bubble Sort');
+  const [sortingAlgoDown, setSortingAlgoDown] = useState('Quick Sort');
   const [sortingAlgoUp, setSortingAlgoUp] = useState('Insertion Sort');
   const [isCompareModeOn, setCompareMode] = useState(false);
 
@@ -185,7 +186,19 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
     } else if (sortingAlgoDown === 'Insertion Sort') {
       insertionSort(...argsBottom);
     } else if (sortingAlgoDown === 'Quick Sort') {
-      quickSort(...argsBottom);
+      // quickSort(...argsBottom);
+      let qSort = new QuickSort(
+        data,
+        ctx,
+        bottomUpColumns,
+        dimension,
+        false,
+        isCompareModeOn,
+        DELAY / speed
+      );
+      qSort.sort().then(() => {
+        setBottomUpCompleted(false);
+      });
     }
 
     if (isCompareModeOn) {
@@ -206,7 +219,19 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
       } else if (sortingAlgoUp === 'Insertion Sort') {
         insertionSort(...argsTop);
       } else if (sortingAlgoUp === 'Quick Sort') {
-        quickSort(...argsTop);
+        // quickSort(...argsTop);
+        let qSort = new QuickSort(
+          data,
+          ctx,
+          topDownColumns,
+          dimension,
+          true,
+          isCompareModeOn,
+          DELAY / speed
+        );
+        qSort.sort().then(() => {
+          setTopDownCompleted(false);
+        });
       }
     }
   };
