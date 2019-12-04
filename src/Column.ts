@@ -1,18 +1,22 @@
 class Column {
-  constructor(x, y, width, height) {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  constructor(x: number, y: number, width: number, height: number) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
   }
 
-  setPosition(x, y) {
+  setPosition(x: number, y: number) {
     this.x = x;
     this.y = y;
     return this;
   }
 
-  setHeight(height) {
+  setHeight(height: number) {
     this.height = height;
   }
 }
