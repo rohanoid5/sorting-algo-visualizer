@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import App from './App';
 // Material-UI stuff
-import { createMuiTheme, useTheme } from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
