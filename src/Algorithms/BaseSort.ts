@@ -14,7 +14,6 @@ export default class BaseSort {
   isTopDown: boolean;
   isCompareModeOn: boolean;
   delay: number;
-  callback: () => void;
   constructor(
     data: number[],
     canvasContext: any,
@@ -22,7 +21,6 @@ export default class BaseSort {
     dimension: dimensionType,
     isTopDown: boolean,
     isCompareModeOn: boolean,
-    callback: () => void,
     delay = 0
   ) {
     this.data = data;
@@ -31,7 +29,6 @@ export default class BaseSort {
     this.dimension = dimension;
     this.isTopDown = isTopDown;
     this.isCompareModeOn = isCompareModeOn;
-    this.callback = callback;
     this.delay = delay;
   }
 
