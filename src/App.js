@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Column from './Column';
-import { quickSort, bubbleSort, insertionSort } from './Algorithms';
+import BubbleSort from './Algorithms/BubbleSort';
+import QuickSort from './Algorithms/QuickSort';
+import InsertionSort from './Algorithms/InsertionSort';
 
 import IconButton from '@material-ui/core/IconButton';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
@@ -143,47 +145,90 @@ const App = ({ toggleDarkTheme, isDarkMode }) => {
     setBottomUpCompleted(true);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const argsBottom = [
-      data,
-      ctx,
-      bottomUpColumns,
-      DELAY / speed,
-      dimension,
-      false,
-      isCompareModeOn,
-      () => {
-        setBottomUpCompleted(false);
-      }
-    ];
-    const argsTop = [
-      data,
-      ctx,
-      topDownColumns,
-      DELAY / speed,
-      dimension,
-      true,
-      isCompareModeOn,
-      () => {
-        setTopDownCompleted(false);
-      }
-    ];
 
     if (sortingAlgoDown === 'Bubble Sort') {
-      bubbleSort(...argsBottom);
+      let bSort = new BubbleSort(
+        data,
+        ctx,
+        bottomUpColumns,
+        dimension,
+        false,
+        isCompareModeOn,
+        DELAY / speed
+      );
+      bSort.sort().then(() => {
+        setBottomUpCompleted(false);
+      });
     } else if (sortingAlgoDown === 'Insertion Sort') {
-      insertionSort(...argsBottom);
+      // insertionSort(...argsBottom);
+      let iSort = new InsertionSort(
+        data,
+        ctx,
+        bottomUpColumns,
+        dimension,
+        false,
+        isCompareModeOn,
+        DELAY / speed
+      );
+      iSort.sort().then(() => {
+        setBottomUpCompleted(false);
+      });
     } else if (sortingAlgoDown === 'Quick Sort') {
-      quickSort(...argsBottom);
+      let qSort = new QuickSort(
+        data,
+        ctx,
+        bottomUpColumns,
+        dimension,
+        false,
+        isCompareModeOn,
+        DELAY / speed
+      );
+      qSort.sort().then(() => {
+        setBottomUpCompleted(false);
+      });
     }
 
     if (isCompareModeOn) {
       setTopDownCompleted(true);
       if (sortingAlgoUp === 'Bubble Sort') {
-        bubbleSort(...argsTop);
+        let bSort = new BubbleSort(
+          data,
+          ctx,
+          topDownColumns,
+          dimension,
+          true,
+          isCompareModeOn,
+          DELAY / speed
+        );
+        bSort.sort().then(() => {
+          setTopDownCompleted(false);
+        });
       } else if (sortingAlgoUp === 'Insertion Sort') {
-        insertionSort(...argsTop);
+        let iSort = new InsertionSort(
+          data,
+          ctx,
+          topDownColumns,
+          dimension,
+          true,
+          isCompareModeOn,
+          DELAY / speed
+        );
+        iSort.sort().then(() => {
+          setTopDownCompleted(false);
+        });
       } else if (sortingAlgoUp === 'Quick Sort') {
-        quickSort(...argsTop);
+        let qSort = new QuickSort(
+          data,
+          ctx,
+          topDownColumns,
+          dimension,
+          true,
+          isCompareModeOn,
+          DELAY / speed
+        );
+        qSort.sort().then(() => {
+          setTopDownCompleted(false);
+        });
       }
     }
   };
